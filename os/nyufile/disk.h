@@ -50,8 +50,11 @@ typedef struct DirEntry {
 } DirEntry;
 #pragma pack(pop)
 
-BootEntry *read_disk(char *disk_name, int *disk_fd);
 void display_fsinfo(BootEntry *disk);
-DirEntry *read_directory(int disk_fd, unsigned int offset);
+unsigned int cluster_to_sector(BootEntry *disk, unsigned int cluster);
+unsigned int cluster_to_bytes(BootEntry *disk, unsigned int cluster);
+unsigned int *read_fat(unsigned char *disk, BootEntry *disk_info, unsigned int cluster);
+DirEntry *read_directory(unsigned char *disk, BootEntry *disk_info, unsigned int cluster);
+unsigned char *read_disk(char *disk_name);
 
 #endif
