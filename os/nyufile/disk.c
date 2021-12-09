@@ -5,6 +5,13 @@
 #include <unistd.h>
 #include "disk.h"
 
+void display_fsinfo(BootEntry *disk) {
+    printf("Number of FATs = %d\n", disk->BPB_NumFATs);
+    printf("Number of bytes per sector = %d\n", disk->BPB_BytsPerSec);
+    printf("Number of sectors per cluster = %d\n", disk->BPB_SecPerClus);
+    printf("Number of reserved sectors = %d\n", disk->BPB_RsvdSecCnt);
+}
+
 int get_file_size(int fd) {
     struct stat stat;
     if (fstat(fd, &stat) == -1) {
@@ -15,25 +22,25 @@ int get_file_size(int fd) {
 }
 
 BootEntry *read_disk(char *disk_name) {
-  int fd = open(disk_name, O_RDONLY);
-  if (fd < 0) {
-    fprintf(stderr, "Error opening disk\n");
-    return NULL;
-  }
+    int fd = open(disk_name, O_RDONLY);
+    if (fd < 0) {
+        fprintf(stderr, "Error opening disk\n");
+        return NULL;
+    }
 
-  int file_size = get_file_size(fd);
-  if (file_size == -1) {
-      fprintf(stderr, "Invalid disk\n");
-      return NULL;
-  }
+    int file_size = get_file_size(fd);
+    if (file_size == -1) {
+        fprintf(stderr, "Invalid disk\n");
+        return NULL;
+    }
 
-  BootEntry *disk = mmap(0, sizeof(BootEntry), PROT_READ, MAP_SHARED, fd, 0);
-  if (disk == MAP_FAILED) {
-    fprintf(stderr, "Error reading disk\n");
-    return NULL;
-  }
+    BootEntry *disk = mmap(0, sizeof(BootEntry), PROT_READ, MAP_SHARED, fd, 0);
+    if (disk == MAP_FAILED) {
+        fprintf(stderr, "Error reading disk\n");
+        return NULL;
+    }
 
-  close(fd);
+    close(fd);
 
-  return disk;
+    return disk;
 }

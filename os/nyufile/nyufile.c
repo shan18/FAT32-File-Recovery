@@ -33,8 +33,7 @@ int main(int argc, char *argv[]) {
         no_option = 0;
         switch(option) {
             case 'i':
-                print(disk->BPB_BytsPerSec);
-                print(disk->BPB_NumFATs);
+                display_fsinfo(disk);
                 break;
             case 'l':
                 puts("-l");
