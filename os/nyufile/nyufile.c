@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
+#include "disk.h"
+#define print(x) printf("%d\n", x)
 
 void display_usage() {
     puts("Usage: ./nyufile disk <options>");
@@ -20,15 +22,19 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // Get diskname
-    char *disk = argv[optind];
+    // Get diskname and read the disk
+    char *disk_name = argv[optind];
+    BootEntry *disk = read_disk(disk_name);
+    if (disk == NULL)
+        return -1;
 
     // Parse options
     while((option = getopt(argc, argv, "ilr:R:s:")) != -1) {
         no_option = 0;
         switch(option) {
             case 'i':
-                puts("-i");
+                print(disk->BPB_BytsPerSec);
+                print(disk->BPB_NumFATs);
                 break;
             case 'l':
                 puts("-l");
@@ -50,6 +56,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Recover file
     if (recovery_mode == 0) {
         puts("Recovering contiguous file");
     } else if (recovery_mode == 1) {
