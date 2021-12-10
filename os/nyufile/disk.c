@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "disk.h"
 #include "utils.h"
-#define print(x) printf("%d\n", x)
 
 void display_fsinfo(BootEntry *disk_info) {
     printf("Number of FATs = %d\n", disk_info->BPB_NumFATs);
@@ -27,6 +26,10 @@ unsigned int *read_fat(unsigned char *disk, BootEntry *disk_info, unsigned int c
 
 DirEntry *read_directory(unsigned char *disk, BootEntry *disk_info, unsigned int cluster) {
     return (DirEntry *) (disk + cluster_to_bytes(disk_info, cluster));
+}
+
+unsigned char *read_cluster(unsigned char *disk, BootEntry *disk_info, unsigned int cluster) {
+    return disk + cluster_to_bytes(disk_info, cluster);
 }
 
 unsigned char *map_disk(char *disk_name, int *disk_size, char mode) {

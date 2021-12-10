@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
 
     // Parse options
     while((option = getopt(argc, argv, "ilr:R:s:")) != -1) {
+        // FIXME: optind is always 1, disk reading should be done at the bottom
         no_option = 0;
         switch(option) {
             case 'i':
@@ -71,6 +72,7 @@ int main(int argc, char *argv[]) {
                 sha1 = optarg;
                 break;
             default:
+                recovery_mode = -1;
                 display_usage();
                 break;
         }

@@ -5,7 +5,10 @@ CFLAGS=-g -pedantic -std=gnu17 -Wall -Wextra
 .PHONY: all
 all: nyufile
 
-nyufile: nyufile.o disk.o recovery.o utils.o
+objects=nyufile.o disk.o recovery.o utils.o
+
+nyufile: $(objects)
+	$(CC) $(CFLAGS) -o nyufile $(objects) -l crypto
 
 nyufile.o: nyufile.c disk.h recovery.h utils.h
 
