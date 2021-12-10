@@ -10,8 +10,16 @@ void recover(char *disk_name, unsigned int root_cluster, unsigned int root_clust
     unsigned char *disk = map_disk(disk_name, &disk_size, 'w');
     BootEntry *disk_info = (BootEntry *)disk;
 
+    print(entry->DIR_FileSize / (disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus) + 1);
     unsigned int file_cluster = entry->DIR_FstClusHI << 16 | entry->DIR_FstClusLO;
     update_disk(disk, disk_info, root_cluster, root_cluster_offset, recovery_data);
+
+    int fatc_recovered = 0;
+    while (fatc_recovered < entry->DIR_FileSize / (disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus)) {
+        update_fat(disk, disk_info, file_cluster, file_cluster + 1);
+        file_cluster++;
+        fatc_recovered++;
+    }
     update_fat(disk, disk_info, file_cluster, 0x0ffffff8);
 
     unmap_disk(disk, disk_size);
