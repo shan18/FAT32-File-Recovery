@@ -54,24 +54,13 @@ void unmap_disk(unsigned char *disk, int disk_size) {
     munmap(disk, disk_size);
 }
 
+void update_disk(unsigned char *disk, BootEntry *disk_info, unsigned int root_cluster, unsigned int cluster_offset, unsigned char data) {
+    disk[cluster_to_bytes(disk_info, root_cluster) + cluster_offset] = data;
+}
+
 void update_fat(unsigned char *disk, BootEntry *disk_info, unsigned int cluster, unsigned int value) {
     unsigned int *fat1 = read_fat(disk, disk_info, cluster, 1);
     *fat1 = value;
     unsigned int *fat2 = read_fat(disk, disk_info, cluster, 1);
     *fat2 = value;
-}
-
-int write_disk(char *disk_name, unsigned int root_cluster, unsigned int file_cluster, unsigned int cluster_offset, unsigned char data) {
-    int disk_size = -1;
-    unsigned char *disk = map_disk(disk_name, &disk_size, 'w');
-    BootEntry *disk_info = (BootEntry *)disk;
-
-    // Update data
-    disk[cluster_to_bytes(disk_info, root_cluster) + cluster_offset] = data;
-
-    // Update FAT
-    update_fat(disk, disk_info, file_cluster, 0x0ffffff8);
-
-    unmap_disk(disk, disk_size);
-    return 0;
 }
