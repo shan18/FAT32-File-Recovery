@@ -1,12 +1,12 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "disk.h"
+#include "recovery.h"
 #include "utils.h"
-#define print(x) printf("%d\n", x)
 
 void list_root(unsigned char *disk, BootEntry *disk_info) {
     int num_entries = 0, bytes_read = sizeof(DirEntry);
-    for (unsigned int next_cluster = disk_info->BPB_RootClus; next_cluster < 0x0ffffff8; next_cluster = *read_fat(disk, disk_info, next_cluster)) {
+    for (unsigned int next_cluster = disk_info->BPB_RootClus; next_cluster < 0x0ffffff8; next_cluster = *read_fat1(disk, disk_info, next_cluster)) {
         for (
             DirEntry *entry = read_directory(disk, disk_info, next_cluster);
             entry->DIR_Attr != 0x0 && bytes_read <= disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     // Recover file
     if (recovery_mode == 0) {
-        puts("Recovering contiguous file");
+        recover_contiguous_file(disk, disk_info, disk_name, filename, sha1);
     } else if (recovery_mode == 1) {
         if (sha1 == NULL) {
             display_usage();

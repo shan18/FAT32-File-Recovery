@@ -5,9 +5,11 @@ CFLAGS=-g -pedantic -std=gnu17 -Wall -Wextra
 .PHONY: all
 all: nyufile
 
-nyufile: nyufile.o disk.o utils.o
+nyufile: nyufile.o disk.o recovery.o utils.o
 
-nyufile.o: nyufile.c disk.h utils.h
+nyufile.o: nyufile.c disk.h recovery.h utils.h
+
+recovery.o: recovery.c recovery.h disk.h utils.h
 
 disk.o: disk.c disk.h
 

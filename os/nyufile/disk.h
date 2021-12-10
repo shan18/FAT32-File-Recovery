@@ -53,8 +53,10 @@ typedef struct DirEntry {
 void display_fsinfo(BootEntry *disk);
 unsigned int cluster_to_sector(BootEntry *disk, unsigned int cluster);
 unsigned int cluster_to_bytes(BootEntry *disk, unsigned int cluster);
-unsigned int *read_fat(unsigned char *disk, BootEntry *disk_info, unsigned int cluster);
+unsigned int *read_fat1(unsigned char *disk, BootEntry *disk_info, unsigned int cluster);
+unsigned int *read_fat2(unsigned char *disk, BootEntry *disk_info, unsigned int cluster);
 DirEntry *read_directory(unsigned char *disk, BootEntry *disk_info, unsigned int cluster);
 unsigned char *read_disk(char *disk_name);
+int write_disk(char *disk_name, unsigned int cluster, unsigned char data);
 
 #endif
