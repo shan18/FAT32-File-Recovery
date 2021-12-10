@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "disk.h"
 #include "utils.h"
+#define print(x) printf("%d\n", x)
 
 void display_fsinfo(BootEntry *disk_info) {
     printf("Number of FATs = %d\n", disk_info->BPB_NumFATs);
@@ -20,12 +21,8 @@ unsigned int cluster_to_bytes(BootEntry *disk_info, unsigned int cluster) {
     return cluster_to_sector(disk_info, cluster) * disk_info->BPB_BytsPerSec;
 }
 
-unsigned int *read_fat1(unsigned char *disk, BootEntry *disk_info, unsigned int cluster) {
-    return (unsigned int *) (disk + disk_info->BPB_RsvdSecCnt * disk_info->BPB_BytsPerSec) + cluster;
-}
-
-unsigned int *read_fat2(unsigned char *disk, BootEntry *disk_info, unsigned int cluster) {
-    return (unsigned int *) (disk + (disk_info->BPB_RsvdSecCnt + disk_info->BPB_FATSz32) * disk_info->BPB_BytsPerSec) + cluster;
+unsigned int *read_fat(unsigned char *disk, BootEntry *disk_info, unsigned int cluster, int nfat) {
+    return (unsigned int *) (disk + (disk_info->BPB_RsvdSecCnt + disk_info->BPB_FATSz32 * (nfat - 1)) * disk_info->BPB_BytsPerSec) + cluster;
 }
 
 DirEntry *read_directory(unsigned char *disk, BootEntry *disk_info, unsigned int cluster) {
@@ -49,7 +46,7 @@ unsigned char *read_disk(char *disk_name) {
     return disk;
 }
 
-int write_disk(char *disk_name, unsigned int cluster, unsigned char data) {
+int write_disk(char *disk_name, unsigned int root_cluster, unsigned int file_cluster, unsigned int cluster_offset, unsigned char data) {
     int fd = open(disk_name, O_RDWR);
     if (fd < 0) {
         fprintf(stderr, "Error opening disk\n");
@@ -68,14 +65,14 @@ int write_disk(char *disk_name, unsigned int cluster, unsigned char data) {
     BootEntry *disk_info = (BootEntry *)disk;
 
     // Update data
-    disk[cluster_to_bytes(disk_info, cluster)] = data;
+    disk[cluster_to_bytes(disk_info, root_cluster) + cluster_offset] = data;
 
     // Update FAT1
-    unsigned int *fat1 = read_fat1(disk, disk_info, cluster);
+    unsigned int *fat1 = read_fat(disk, disk_info, file_cluster, 1);
     *fat1 = 0x0ffffff8;
 
     // Update FAT2
-    unsigned int *fat2 = read_fat2(disk, disk_info, cluster);
+    unsigned int *fat2 = read_fat(disk, disk_info, file_cluster, 2);
     *fat2 = 0x0ffffff8;
 
     close(fd);

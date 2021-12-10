@@ -6,7 +6,7 @@
 
 void list_root(unsigned char *disk, BootEntry *disk_info) {
     int num_entries = 0, bytes_read = sizeof(DirEntry);
-    for (unsigned int next_cluster = disk_info->BPB_RootClus; next_cluster < 0x0ffffff8; next_cluster = *read_fat1(disk, disk_info, next_cluster)) {
+    for (unsigned int next_cluster = disk_info->BPB_RootClus; next_cluster < 0x0ffffff8; next_cluster = *read_fat(disk, disk_info, next_cluster, 1)) {
         for (
             DirEntry *entry = read_directory(disk, disk_info, next_cluster);
             entry->DIR_Attr != 0x0 && bytes_read <= disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus;
