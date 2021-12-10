@@ -43,7 +43,8 @@ int main(int argc, char *argv[]) {
 
     // Get diskname and read the disk
     char *disk_name = argv[optind];
-    unsigned char *disk = read_disk(disk_name);
+    int disk_size = 1;
+    unsigned char *disk = map_disk(disk_name, &disk_size, 'r');
     if (disk == NULL)
         return -1;
     BootEntry *disk_info = (BootEntry *)disk;
@@ -90,5 +91,6 @@ int main(int argc, char *argv[]) {
     if(no_option)
         display_usage();
     
+    unmap_disk(disk, disk_size);
     return 0;
 }

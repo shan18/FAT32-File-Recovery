@@ -15,7 +15,9 @@ void recover_contiguous_file(unsigned char *disk, BootEntry *disk_info, char *di
         ) {
             if (entry->DIR_Name[0] == 0xe5 && entry->DIR_Attr == 0x20) {
                 if (compare_entries(entry->DIR_Name, file_name, 1)) {
-                    if (write_disk(disk_name, next_cluster, entry->DIR_FstClusHI << 16 | entry->DIR_FstClusLO, bytes_read - sizeof(DirEntry), (unsigned char) file_name[0]) == 0) {
+                    unsigned int file_cluster = entry->DIR_FstClusHI << 16 | entry->DIR_FstClusLO;
+                    unsigned int root_cluster_offset = bytes_read - sizeof(DirEntry);
+                    if (write_disk(disk_name, next_cluster, file_cluster, root_cluster_offset, (unsigned char) file_name[0]) == 0) {
                         display_entry_name(entry->DIR_Name);
                         puts(": successfully recovered");
                         file_found = 1;
