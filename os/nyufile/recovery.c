@@ -21,15 +21,15 @@ unsigned char *get_sha1(unsigned char *disk, BootEntry *disk_info, DirEntry *ent
     unsigned char *file_sha = malloc(SHA_DIGEST_LENGTH);
 
     unsigned int file_cluster = entry->DIR_FstClusHI << 16 | entry->DIR_FstClusLO;
-    unsigned char *sha1 = malloc(file_cluster * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
+    unsigned char *content = malloc(file_cluster * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
     unsigned int cdone = 0;
     while (cdone < entry->DIR_FileSize / (disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus) + 1) {
-        memcpy(sha1 + cdone * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec, read_cluster(disk, disk_info, file_cluster), disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
+        memcpy(content + cdone * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec, read_cluster(disk, disk_info, file_cluster), disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
         file_cluster++;
         cdone++;
     }
-    SHA1(sha1, entry->DIR_FileSize, file_sha);
-    free(sha1);
+    SHA1(content, entry->DIR_FileSize, file_sha);
+    free(content);
     return file_sha;
 }
 

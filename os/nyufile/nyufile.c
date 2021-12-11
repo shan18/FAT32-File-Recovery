@@ -32,9 +32,37 @@ void list_root(unsigned char *disk, BootEntry *disk_info) {
 
 int main(int argc, char *argv[]) {
     int option, no_option = 1;
-    int recovery_mode = -1;  // -1: no recovery, 0: recover contiguous, 1: recover non-contiguous
+    char optflag = ' ';
     char *filename = NULL;  // File to be recovered
     char *sha1 = NULL;  // SHA1 of the file to be recovered
+
+    // Parse options
+    while((option = getopt(argc, argv, "ilr:R:s:")) != -1) {
+        no_option = 0;
+        switch(option) {
+            case 'i':
+                optflag = 'i';
+                break;
+            case 'l':
+                optflag = 'l';
+                break;
+            case 'r':
+                filename = optarg;
+                optflag = 'r';
+                break;
+            case 'R':
+                filename = optarg;
+                optflag = 'R';
+                break;
+            case 's':
+                sha1 = optarg;
+                break;
+            default:
+                optflag = ' ';
+                display_usage();
+                break;
+        }
+    }
 
     if (optind == argc) {
         display_usage();
@@ -49,39 +77,14 @@ int main(int argc, char *argv[]) {
         return -1;
     BootEntry *disk_info = (BootEntry *)disk;
 
-    // Parse options
-    while((option = getopt(argc, argv, "ilr:R:s:")) != -1) {
-        // FIXME: optind is always 1, disk reading should be done at the bottom
-        no_option = 0;
-        switch(option) {
-            case 'i':
-                display_fsinfo(disk_info);
-                break;
-            case 'l':
-                list_root(disk, disk_info);
-                break;
-            case 'r':
-                filename = optarg;
-                recovery_mode = 0;
-                break;
-            case 'R':
-                filename = optarg;
-                recovery_mode = 1;
-                break;
-            case 's':
-                sha1 = optarg;
-                break;
-            default:
-                recovery_mode = -1;
-                display_usage();
-                break;
-        }
-    }
-
     // Recover file
-    if (recovery_mode == 0) {
+    if (optflag == 'i')
+        display_fsinfo(disk_info);
+    else if (optflag == 'l')
+        list_root(disk, disk_info);
+    else if (optflag == 'r')
         recover_contiguous_file(disk, disk_info, disk_name, filename, sha1);
-    } else if (recovery_mode == 1) {
+    else if (optflag == 'R') {
         if (sha1 == NULL) {
             display_usage();
             return 0;
