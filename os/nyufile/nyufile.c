@@ -95,7 +95,6 @@ int main(int argc, char *argv[]) {
             display_usage();
             return 0;
         }
-        puts("Recovering non-contiguous file");
     }
 
     unmap_disk(disk, disk_size);
