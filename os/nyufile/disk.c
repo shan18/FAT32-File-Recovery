@@ -62,8 +62,7 @@ void update_disk(unsigned char *disk, BootEntry *disk_info, unsigned int root_cl
 }
 
 void update_fat(unsigned char *disk, BootEntry *disk_info, unsigned int cluster, unsigned int value) {
-    unsigned int *fat1 = read_fat(disk, disk_info, cluster, 1);
-    *fat1 = value;
-    unsigned int *fat2 = read_fat(disk, disk_info, cluster, 1);
-    *fat2 = value;
+    for(int i = 1; i <= disk_info->BPB_NumFATs; i++) {
+        *read_fat(disk, disk_info, cluster, i) = value;
+    }
 }
