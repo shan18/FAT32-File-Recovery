@@ -18,9 +18,12 @@ int compare_sha1(unsigned char *file_sha, char *sha1) {
 }
 
 unsigned char *get_sha1(unsigned char *disk, BootEntry *disk_info, DirEntry *entry) {
-    unsigned char *file_sha = malloc(SHA_DIGEST_LENGTH);
-
     unsigned int file_cluster = entry->DIR_FstClusHI << 16 | entry->DIR_FstClusLO;
+    unsigned char *file_sha = malloc(SHA_DIGEST_LENGTH);
+    if (file_cluster == 0x0) {
+        SHA1(0x0, entry->DIR_FileSize, file_sha);
+        return file_sha;
+    }
     unsigned char *content = malloc(file_cluster * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
     unsigned int cdone = 0;
     while (cdone < entry->DIR_FileSize / (disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus) + 1) {

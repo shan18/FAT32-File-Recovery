@@ -31,14 +31,14 @@ void list_root(unsigned char *disk, BootEntry *disk_info) {
 }
 
 int main(int argc, char *argv[]) {
-    int option, no_option = 1;
+    int option, optcount = 0;
     char optflag = ' ';
     char *filename = NULL;  // File to be recovered
     char *sha1 = NULL;  // SHA1 of the file to be recovered
 
     // Parse options
     while((option = getopt(argc, argv, "ilr:R:s:")) != -1) {
-        no_option = 0;
+        optcount++;
         switch(option) {
             case 'i':
                 optflag = 'i';
@@ -59,8 +59,14 @@ int main(int argc, char *argv[]) {
                 break;
             default:
                 optflag = ' ';
-                display_usage();
                 break;
+        }
+    }
+
+    if (optcount != 1 || optflag == ' ') {
+        if (!((optflag == 'r' || optflag =='R') && sha1 != NULL)) {
+            display_usage();
+            return 0;
         }
     }
 
@@ -92,10 +98,6 @@ int main(int argc, char *argv[]) {
         puts("Recovering non-contiguous file");
     }
 
-    // If no option given, show usage and exit
-    if(no_option)
-        display_usage();
-    
     unmap_disk(disk, disk_size);
     return 0;
 }

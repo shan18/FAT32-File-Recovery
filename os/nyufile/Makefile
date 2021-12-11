@@ -1,6 +1,5 @@
 CC=gcc
-# CFLAGS=-g -pedantic -std=gnu17 -Wall -Werror -Wextra
-CFLAGS=-g -pedantic -std=gnu17 -Wall -Wextra
+CFLAGS=-g -pedantic -std=gnu99 -Wall -Werror -Wextra
 
 .PHONY: all
 all: nyufile
