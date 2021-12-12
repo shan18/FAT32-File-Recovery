@@ -24,13 +24,8 @@ unsigned char *get_sha1(unsigned char *disk, BootEntry *disk_info, DirEntry *ent
         SHA1(0x0, entry->DIR_FileSize, file_sha);
         return file_sha;
     }
-    unsigned char *content = malloc(file_cluster * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
-    unsigned int cdone = 0;
-    while (cdone < entry->DIR_FileSize / (disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus) + 1) {
-        memcpy(content + cdone * disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec, read_cluster(disk, disk_info, file_cluster), disk_info->BPB_SecPerClus * disk_info->BPB_BytsPerSec);
-        file_cluster++;
-        cdone++;
-    }
+    unsigned char *content = malloc(entry->DIR_FileSize);
+    memcpy(content, read_cluster(disk, disk_info, file_cluster), entry->DIR_FileSize);
     SHA1(content, entry->DIR_FileSize, file_sha);
     free(content);
     return file_sha;
