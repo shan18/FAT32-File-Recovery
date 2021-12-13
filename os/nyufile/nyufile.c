@@ -1,3 +1,8 @@
+/* References:
+    - https://stackoverflow.com/a/16519793/6562425
+    - Students Referenced: Rakhee (Net ID: rr3937)
+*/
+
 #include <unistd.h>
 #include <stdio.h>
 #include "disk.h"
