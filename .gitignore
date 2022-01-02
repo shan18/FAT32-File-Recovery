@@ -1,0 +1,7 @@
+.vscode/
+.prettierignore
+*.o
+run
+grading/
+dumps/
+fat32.disk
