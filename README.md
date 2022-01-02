@@ -4,6 +4,12 @@ FAT32 is still one of the most widely used file systems in SD cards and USB flas
 
 ## Compiling
 
+Install the _openssl_ package
+
+```
+$ sudo apt install openssl
+```
+
 To compile the project, run the command
 
 ```
