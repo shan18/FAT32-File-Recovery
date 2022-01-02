@@ -1,8 +1,3 @@
-/* References:
-    - https://stackoverflow.com/a/16519793/6562425
-    - Students Referenced: Rakhee (Net ID: rr3937)
-*/
-
 #include <unistd.h>
 #include <stdio.h>
 #include "disk.h"
@@ -19,12 +14,12 @@ void list_root(unsigned char *disk, BootEntry *disk_info) {
         ) {
             if (entry->DIR_Name[0] == 0xe5)
                 continue;
-            
+
             display_entry_name(entry->DIR_Name);
-            
+
             if (entry->DIR_Attr == 0x10)
                 printf("/");
-            
+
             unsigned int start_cluster = entry->DIR_FstClusHI << 16 | entry->DIR_FstClusLO;
             printf(" (size = %u, starting cluster = %u)\n", entry->DIR_FileSize, start_cluster);
             num_entries++;
