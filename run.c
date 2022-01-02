@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     char *sha1 = NULL;  // SHA1 of the file to be recovered
 
     // Parse options
-    while((option = getopt(argc, argv, "ilr:R:s:")) != -1) {
+    while((option = getopt(argc, argv, "ilr:s:")) != -1) {
         optcount++;
         switch(option) {
             case 'i':
@@ -50,10 +50,6 @@ int main(int argc, char *argv[]) {
                 filename = optarg;
                 optflag = 'r';
                 break;
-            case 'R':
-                filename = optarg;
-                optflag = 'R';
-                break;
             case 's':
                 sha1 = optarg;
                 break;
@@ -64,7 +60,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (optcount != 1 || optflag == ' ') {
-        if (!((optflag == 'r' || optflag =='R') && sha1 != NULL)) {
+        if (!(optflag == 'r' && sha1 != NULL)) {
             display_usage();
             return 0;
         }
@@ -90,13 +86,6 @@ int main(int argc, char *argv[]) {
         list_root(disk, disk_info);
     else if (optflag == 'r')
         recover_contiguous_file(disk, disk_info, disk_name, filename, sha1);
-    else if (optflag == 'R') {
-        if (sha1 == NULL) {
-            display_usage();
-            return 0;
-        }
-        recover_non_contiguous_file(disk, disk_info, disk_name, filename, sha1);
-    }
 
     unmap_disk(disk, disk_size);
     return 0;

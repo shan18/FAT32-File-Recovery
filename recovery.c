@@ -91,33 +91,3 @@ void recover_contiguous_file(unsigned char *disk, BootEntry *disk_info, char *di
         printf("\n");
     }
 }
-
-void recover_non_contiguous_file(unsigned char *disk, BootEntry *disk_info, char *disk_name, char *file_name, char *sha1) {
-    int bytes_read = sizeof(DirEntry), file_found = 0;
-    DirEntry *file_entry;
-    for (unsigned int next_cluster = disk_info->BPB_RootClus; next_cluster < 0x0ffffff8 && !file_found; next_cluster = *read_fat(disk, disk_info, next_cluster, 1)) {
-        for (
-            DirEntry *entry = read_directory(disk, disk_info, next_cluster);
-            entry->DIR_Attr != 0x0 && bytes_read <= disk_info->BPB_BytsPerSec * disk_info->BPB_SecPerClus;
-            entry++, bytes_read += sizeof(DirEntry)
-        ) {
-            if (entry->DIR_Name[0] == 0xe5 && entry->DIR_Attr == 0x20 && compare_entries(entry->DIR_Name, file_name, 1)) {
-                file_entry = entry;
-                unsigned char *file_sha = get_sha1(disk, disk_info, entry);
-                if (compare_sha1(file_sha, sha1)) {
-                    recover(disk_name, next_cluster, bytes_read - sizeof(DirEntry), file_entry, (unsigned char) file_name[0]);
-                    file_found = 1;
-                    break;
-                }
-                free(file_sha);
-            }
-        }
-        bytes_read = sizeof(DirEntry);
-    }
-
-    if (file_found) {
-        display_entry_name(file_entry->DIR_Name);
-        printf(": successfully recovered with SHA-1\n");
-    } else
-        printf("%s: file not found\n", file_name);
-}
