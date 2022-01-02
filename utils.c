@@ -5,11 +5,10 @@
 #include "utils.h"
 
 void display_usage() {
-    puts("Usage: ./nyufile disk <options>");
+    puts("Usage: ./run disk <options>");
     puts("  -i                     Print the file system information.");
     puts("  -l                     List the root directory.");
     puts("  -r filename [-s sha1]  Recover a contiguous file.");
-    puts("  -R filename -s sha1    Recover a possibly non-contiguous file.");
 }
 
 int get_file_size(int fd) {
@@ -31,7 +30,7 @@ char *get_packed_entry(unsigned char *entry) {
 
     if(entry[8] != ' ')
         packed_entry[j++] = '.';
-    
+
     for(int i = 8; i < 11; i++) {
         if(entry[i] != ' ')
             packed_entry[j++] = entry[i];
